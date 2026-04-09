@@ -40,7 +40,7 @@ async function getTwitchToken(): Promise<string> {
 
 async function checkTwitch() {
   const username = process.env.TWITCH_USERNAME;
-  if (!username) return { live: false, platform: "twitch" as const };
+  if (!username) return { live: false, platform: "twitch" as const, error: "TWITCH_USERNAME not set" };
 
   try {
     const token = await getTwitchToken();
@@ -53,6 +53,12 @@ async function checkTwitch() {
         },
       }
     );
+
+    if (!res.ok) {
+      const text = await res.text();
+      return { live: false, platform: "twitch" as const, error: `Twitch API ${res.status}: ${text}` };
+    }
+
     const data: TwitchStreamsResponse = await res.json();
     const stream = data.data?.[0];
 
@@ -66,8 +72,8 @@ async function checkTwitch() {
       };
     }
     return { live: false, platform: "twitch" as const };
-  } catch {
-    return { live: false, platform: "twitch" as const };
+  } catch (e) {
+    return { live: false, platform: "twitch" as const, error: String(e) };
   }
 }
 
