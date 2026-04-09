@@ -59,7 +59,7 @@ async function checkTwitch() {
       return { live: false, platform: "twitch" as const, error: `Twitch API ${res.status}: ${text}` };
     }
 
-    const data: TwitchStreamsResponse = await res.json();
+    const data = await res.json();
     const stream = data.data?.[0];
 
     if (stream) {
@@ -71,7 +71,7 @@ async function checkTwitch() {
         game: stream.game_name,
       };
     }
-    return { live: false, platform: "twitch" as const };
+    return { live: false, platform: "twitch" as const, debug: { username, responseKeys: Object.keys(data), dataLength: data.data?.length } };
   } catch (e) {
     return { live: false, platform: "twitch" as const, error: String(e) };
   }
