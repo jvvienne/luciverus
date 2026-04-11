@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
-
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #0a0a0e;
+  --foreground: #e8e4f0;
+  --accent: #a78bfa;
 }
 
 @theme inline {
@@ -16,37 +16,117 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-mono), monospace;
 }
 
-@keyframes breathe {
-  0%, 100% { opacity: 0.3; scale: 1; }
-  50% { opacity: 0.5; scale: 1.15; }
-}
-
-.glow-bg {
-  position: absolute;
+/* ── Background mesh ── */
+.bg-glow {
+  position: fixed;
   inset: 0;
-  margin: auto;
-  width: 500px;
-  height: 500px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, transparent 70%);
-  filter: blur(120px);
-  animation: breathe 6s ease-in-out infinite;
   pointer-events: none;
-  transition: opacity 1s ease, width 1s ease, height 1s ease, filter 1s ease;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 50% 50% at 25% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 75% 65%, rgba(120, 80, 200, 0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 50% 80%, rgba(100, 60, 180, 0.03) 0%, transparent 70%),
+    radial-gradient(circle at 50% 40%, rgba(167, 139, 250, 0.06) 0%, transparent 50%);
 }
 
-.glow-bg.glow-live {
-  width: 650px;
-  height: 650px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, transparent 70%);
-  filter: blur(130px);
-  animation: breathe-live 4s ease-in-out infinite;
+/* ── Live state background boost ── */
+.bg-glow-live {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle at 50% 40%, rgba(167, 139, 250, 0.08) 0%, transparent 50%);
+  animation: live-bg-pulse 4s ease-in-out infinite;
 }
 
-@keyframes breathe-live {
-  0%, 100% { opacity: 0.35; scale: 1; }
-  50% { opacity: 0.55; scale: 1.15; }
+@keyframes live-bg-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
+
+/* ── Live pill border pulse ── */
+.live-pill-pulse {
+  animation: pill-glow 3s ease-in-out infinite;
+}
+
+@keyframes pill-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(167, 139, 250, 0.08); }
+  50% { box-shadow: 0 0 25px rgba(167, 139, 250, 0.18); }
+}
+
+/* ── Title shimmer ── */
+.title-shimmer {
+  color: transparent;
+  background: linear-gradient(
+    90deg,
+    rgba(180, 170, 210, 0.35) 0%,
+    rgba(167, 139, 250, 0.7) 20%,
+    rgba(200, 185, 240, 0.5) 50%,
+    rgba(167, 139, 250, 0.7) 80%,
+    rgba(180, 170, 210, 0.35) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 8s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Live title — faster shimmer, brighter */
+.title-shimmer-live {
+  color: transparent;
+  background: linear-gradient(
+    90deg,
+    rgba(180, 170, 210, 0.45) 0%,
+    rgba(167, 139, 250, 0.85) 20%,
+    rgba(200, 185, 240, 0.6) 50%,
+    rgba(167, 139, 250, 0.85) 80%,
+    rgba(180, 170, 210, 0.45) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(167, 139, 250, 0.15));
+}
+
+/* ── Cursor blink ── */
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: '\2588';
+  font-size: 0.7em;
+  color: var(--accent);
+  animation: blink-cursor 1s step-end infinite;
+  margin-left: 2px;
+}
+
+/* ── Page load fade-in ── */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter { animation: page-enter 1s ease-out forwards; }
+.page-enter-delay-1 { opacity: 0; animation: page-enter 0.8s ease-out 0.2s forwards; }
+.page-enter-delay-2 { opacity: 0; animation: page-enter 0.8s ease-out 0.4s forwards; }
+.page-enter-delay-3 { opacity: 0; animation: page-enter 0.8s ease-out 0.6s forwards; }
+
+/* ── History item fade-in ── */
+@keyframes fade-slide-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-item { opacity: 0; animation: fade-slide-in 0.4s ease-out forwards; }
