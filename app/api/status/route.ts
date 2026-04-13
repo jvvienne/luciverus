@@ -102,8 +102,6 @@ async function checkTikTok() {
   }
 }
 
-import { trackTikTokStatus } from "@/lib/tiktok-tracker";
-
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
@@ -132,9 +130,6 @@ export async function GET(request: Request) {
   }
 
   const [twitch, tiktok] = await Promise.all([checkTwitch(), checkTikTok()]);
-
-  // Track TikTok live sessions for history
-  trackTikTokStatus(tiktok.live);
 
   return Response.json(
     { twitch, tiktok, checkedAt: new Date().toISOString() },

@@ -18,8 +18,6 @@ interface TwitchVideo {
   type: string;
 }
 
-import { getTikTokHistory } from "@/lib/tiktok-tracker";
-
 let cachedToken: string | null = null;
 let tokenExpiry = 0;
 
@@ -73,21 +71,18 @@ export async function GET() {
     );
     const videosData: { data: TwitchVideo[] } = await videosRes.json();
 
-    const tiktokStreams = getTikTokHistory();
-
-    // TODO: re-enable Twitch history once real streams start
-    // For now, only show TikTok history (existing Twitch VODs are test streams)
-    const streams = [...tiktokStreams].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    const streams = (videosData.data || []).map((v: TwitchVideo) => ({
+      title: v.title,
+      date: v.created_at,
+      duration: v.duration,
+      platform: "twitch" as const,
+    }));
 
     return Response.json(
       { streams },
       { headers: { "Cache-Control": "public, max-age=300" } }
     );
   } catch {
-    // Even if Twitch fails, still return TikTok history
-    const tiktokStreams = getTikTokHistory();
-    return Response.json({ streams: tiktokStreams });
+    return Response.json({ streams: [] });
   }
 }
