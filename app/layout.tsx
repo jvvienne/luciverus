@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Orbitron } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const geistMono = Geist_Mono({
@@ -28,7 +29,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistMono.variable} ${orbitron.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
