@@ -102,6 +102,8 @@ async function checkTikTok() {
   }
 }
 
+import { trackLiveStatus } from "@/lib/session-tracker";
+
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
@@ -130,6 +132,12 @@ export async function GET(request: Request) {
   }
 
   const [twitch, tiktok] = await Promise.all([checkTwitch(), checkTikTok()]);
+
+  // Track live sessions in Redis for history
+  await Promise.all([
+    trackLiveStatus("twitch", twitch.live, twitch.title),
+    trackLiveStatus("tiktok", tiktok.live),
+  ]);
 
   return Response.json(
     { twitch, tiktok, checkedAt: new Date().toISOString() },
